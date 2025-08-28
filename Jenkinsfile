@@ -50,6 +50,20 @@ pipeline {
                 echo "This is Maven Package Stage"
                 sh 'mvn package'
             }
+        }
+        stage('Build + Test + Sonar (Maven)') {
+            steps {
+                withSonarQubeEnv('sonarserver') {
+                    sh '''
+                        mvn -B clean \
+                          org.jacoco:jacoco-maven-plugin:prepare-agent \
+                          verify sonar:sonar \
+                          -Dsonar.organization=fazaluddin08 \
+                          -Dsonar.projectKey=fazaluddinsyed_enahanced-petclinc-springboot \
+                          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                    '''
+                }
+            }
         } 
         stage('Sonar Quality Gate'){
             steps {
