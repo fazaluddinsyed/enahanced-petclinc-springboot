@@ -53,6 +53,7 @@ pipeline {
         }
         stage('Build + Test + Sonar (Maven)') {
             steps {
+                sh 'rm -f .scannerwork/report-task.txt'
                 withSonarQubeEnv('sonarserver') {
                     sh '''
                         mvn -B clean \
