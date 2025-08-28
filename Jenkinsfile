@@ -6,10 +6,10 @@ pipeline {
     environment {
         IMAGE_NAME  ="springbootapp"
         IMAGE_TAG   ="latest"
-        ACR_NAME    ="jenkinsazure"
-        TENANT_ID   ="265ab705-04a7-4f67-af07-dcf0d1388db9"
-        ACR_LOGIN_SERVER ="${ACR_NAME}.azurecr.io"
-        FULL_IMAGE_NAME ="${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${IMAGE_TAG}"
+        // ACR_NAME    ="jenkinsazure"
+        // TENANT_ID   ="265ab705-04a7-4f67-af07-dcf0d1388db9"
+        // ACR_LOGIN_SERVER ="${ACR_NAME}.azurecr.io"
+        // FULL_IMAGE_NAME ="${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${IMAGE_TAG}"
     }
     stages {
         stage('Checkout From Git') {
