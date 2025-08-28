@@ -7,14 +7,14 @@ pipeline {
         IMAGE_NAME  ="springbootapp"
         IMAGE_TAG   ="latest"
         ACR_NAME    ="jenkinsazure"
-        TENANT_ID   ="ec78375d-0db0-42cf-82a6-2e6403e95936"
+        TENANT_ID   ="265ab705-04a7-4f67-af07-dcf0d1388db9"
         ACR_LOGIN_SERVER ="${ACR_NAME}.azurecr.io"
         FULL_IMAGE_NAME ="${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${IMAGE_TAG}"
     }
     stages {
         stage('Checkout From Git') {
             steps {
-                git branch: 'prod', url: 'https://github.com/practice-bala/enahanced-petclinc-springboot.git'
+                git branch: 'prod', url: 'https://github.com/fazaluddinsyed/enahanced-petclinc-springboot.git'
             }
         }  
         stage('Maven Validate') {
@@ -37,10 +37,10 @@ pipeline {
                 withSonarQubeEnv('sonarserver') {
                     sh '''
                         $SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar.organization=bkrrajmali \
+                        -Dsonar.organization=fazaluddin08 \
                         -Dsonar.projectName=SpringBootPet \
-                        -Dsonar.projectKey=bkrrajmali_springbootpet \
-                        -Dsonar.java.binaries=.
+                        -Dsonar.projectKey=fazaluddinsyed_enahanced-petclinc-springboot \
+                        -Dsonar.java.binaries=./target
                     '''
                 }
             }
@@ -54,7 +54,7 @@ pipeline {
         stage('Sonar Quality Gate'){
             steps {
                 timeout(time: 1, unit: 'MINUTES') {
-                waitForQualityGate abortPipeline: true, credentialsId: 'sonar'
+                waitForQualityGate abortPipeline: true, credentialsId: 'sonar-token'
                 }
             }
         }
@@ -66,29 +66,29 @@ pipeline {
                 }
             }
         }
-        stage ('ACR LOGIN'){
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'azure-acr-sp', usernameVariable: 'AZURE_USERNAME',passwordVariable: 'AZURE_PASSWORD')]){
-                    script {
-                        echo "Azure login to container registry"
-                        sh '''
-                        az login --service-principal -u $AZURE_USERNAME -p $AZURE_PASSWORD --tenant $TENANT_ID
-                        az acr login --name $ACR_NAME
-                        '''
-                    }
-                }
-            }
-        }
-        stage('Docker Push to ACR'){
-            steps {
-                script {
-                    echo "Docker Push image to Registry" 
-                    sh '''
-                    docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${FULL_IMAGE_NAME}
-                    docker push ${FULL_IMAGE_NAME}
-                    '''
-                }
-            }
-        }
+        // stage ('ACR LOGIN'){
+        //     steps {
+        //         withCredentials([usernamePassword(credentialsId: 'azure-acr-sp', usernameVariable: 'AZURE_USERNAME',passwordVariable: 'AZURE_PASSWORD')]){
+        //             script {
+        //                 echo "Azure login to container registry"
+        //                 sh '''
+        //                 az login --service-principal -u $AZURE_USERNAME -p $AZURE_PASSWORD --tenant $TENANT_ID
+        //                 az acr login --name $ACR_NAME
+        //                 '''
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('Docker Push to ACR'){
+        //     steps {
+        //         script {
+        //             echo "Docker Push image to Registry" 
+        //             sh '''
+        //             docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${FULL_IMAGE_NAME}
+        //             docker push ${FULL_IMAGE_NAME}
+        //             '''
+        //         }
+        //     }
+        // }
     }
 }
