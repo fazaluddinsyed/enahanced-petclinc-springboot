@@ -2,10 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: springboot-app
+  namespace: petclinic
   labels:
     app: springboot-app
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: springboot-app
@@ -15,24 +16,35 @@ spec:
         app: springboot-app
     spec:
       containers:
-      - name: springboot-app
-        image: dockerregnodejs.azurecr.io/springboot:latest
-        ports:
-        - containerPort: 8080
-      imagePullSecrets:
-      - name: acr-auth
-
+        - name: springboot-app
+          image: fazalacr101.azurecr.io/springbootapp:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: springboot-app  
+  name: springboot-app
+  namespace: petclinic
   labels:
     app: springboot-app
 spec:
   type: LoadBalancer
+  selector:
+    app: springboot-app
   ports:
     - port: 80
       targetPort: 8080
-  selector:
-    app: springboot-app
